@@ -43,7 +43,7 @@ log = app.logger
 
 
 @app.route("/", methods=("GET",))
-@app.route("/accounts", methods=("GET",))
+@app.route("/products", methods=("GET",))
 def product_index():
     """Show all the products, alphabetic order."""
 
@@ -51,7 +51,7 @@ def product_index():
         with conn.cursor(row_factory=namedtuple_row) as cur:
             products = cur.execute(
                 """
-                SELECT sku, name, price
+                SELECT sku, name, description, price, ean
                 FROM product
                 ORDER BY name ASC;
                 """,
@@ -67,6 +67,57 @@ def product_index():
         return jsonify(products)
 
     return render_template("product/index.html", products=products)
+
+
+@app.route("/customers", methods=("GET",))
+def customer_index():
+    """Show all customers, alphabetic order."""
+
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=namedtuple_row) as cur:
+            customers = cur.execute(
+                """
+                SELECT cust_no, name, email, phone, address
+                FROM customer
+                ORDER BY cust_no ASC;
+                """,
+                {},
+            ).fetchall()
+            log.debug(f"Found {cur.rowcount} rows.")
+
+    # API-like response is returned to clients that request JSON explicitly (e.g., fetch)
+    if (
+        request.accept_mimetypes["application/json"]
+        and not request.accept_mimetypes["text/html"]
+    ):
+        return jsonify(customers)
+
+    return render_template("customer/index.html", customers=customers)
+
+@app.route("/suppliers", methods=("GET",))
+def supplier_index():
+    """Show all the products, alphabetic order."""
+
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=namedtuple_row) as cur:
+            suppliers = cur.execute(
+                """
+                SELECT TIN, name, address, sku, date
+                FROM supplier
+                ORDER BY name ASC;
+                """,
+                {},
+            ).fetchall()
+            log.debug(f"Found {cur.rowcount} rows.")
+
+    # API-like response is returned to clients that request JSON explicitly (e.g., fetch)
+    if (
+        request.accept_mimetypes["application/json"]
+        and not request.accept_mimetypes["text/html"]
+    ):
+        return jsonify(suppliers)
+
+    return render_template("supplier/index.html", suppliers=suppliers)
 
 """
 @app.route("/accounts/<account_number>/update", methods=("GET", "POST"))

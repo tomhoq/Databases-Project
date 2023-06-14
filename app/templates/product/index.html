@@ -14,7 +14,9 @@
         </div>
         <!-- <a class="action" href="">Edit</a> -->
       </header>
+      <p class="body">{{ product['description'] }}</p>
       <p class="body">€ {{ product['price'] }}</p>
+      <p class="body">EAN: {{ product['ean'] }}</p>
     </article>
     {% if not loop.last %}
       <hr>

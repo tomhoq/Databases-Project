@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Suppliers{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  {% for supplier in suppliers %}
+    <article class="post">
+      <header>
+        <div>
+          <h1>{{ supplier['name'] }}</h1>
+          <div class="about">{{ supplier['address'] }}</div>
+        </div>
+        <!-- <a class="action" href="">Edit</a> -->
+      </header>
+      <p class="body">email: {{ supplier['address'] }}</p>
+      <p class="body">Product supplied: {{ supplier['sku'] }}</p>
+      <p class="body">Date of last supply: {{ supplier['date'] }}</p>
+    </article>
+    {% if not loop.last %}
+      <hr>
+    {% endif %}
+  {% endfor %}
+{% endblock %}

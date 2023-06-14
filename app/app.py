@@ -45,7 +45,7 @@ log = app.logger
 @app.route("/", methods=("GET",))
 @app.route("/products", methods=("GET",))
 def product_index():
-    """Show all the products, alphabetic order."""
+    """Show all the products, ordered by name alphabetically."""
 
     with pool.connection() as conn:
         with conn.cursor(row_factory=namedtuple_row) as cur:
@@ -69,9 +69,39 @@ def product_index():
     return render_template("product/index.html", products=products)
 
 
+@app.route("/orders", methods=("GET",))
+def order_index():
+    """Show all the unpaid orders, ordered from most recent date."""
+
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=namedtuple_row) as cur:
+            orders = cur.execute(
+                """
+                SELECT order_no, cust_no, date
+                FROM orders o
+                WHERE NOT EXISTS (
+                    SELECT order_no FROM pay p
+                    WHERE p.order_no = o.order_no
+                )
+                ORDER BY date DESC;
+                """,
+                {},
+            ).fetchall()
+            log.debug(f"Found {cur.rowcount} rows.")
+
+    # API-like response is returned to clients that request JSON explicitly (e.g., fetch)
+    if (
+        request.accept_mimetypes["application/json"]
+        and not request.accept_mimetypes["text/html"]
+    ):
+        return jsonify(orders)
+
+    return render_template("order/index.html", orders=orders)
+
+
 @app.route("/customers", methods=("GET",))
 def customer_index():
-    """Show all customers, alphabetic order."""
+    """Show all customers, ordered by customer number."""
 
     with pool.connection() as conn:
         with conn.cursor(row_factory=namedtuple_row) as cur:
@@ -94,9 +124,10 @@ def customer_index():
 
     return render_template("customer/index.html", customers=customers)
 
+
 @app.route("/suppliers", methods=("GET",))
 def supplier_index():
-    """Show all the products, alphabetic order."""
+    """Show all the suppliers, ordered by name alphabetically."""
 
     with pool.connection() as conn:
         with conn.cursor(row_factory=namedtuple_row) as cur:

@@ -66,7 +66,7 @@ def product_index():
     ):
         return jsonify(products)
 
-    return render_template("product/index.html", products=products)
+    return render_template("product/product_index.html", products=products)
 
 
 @app.route("/orders", methods=("GET",))
@@ -96,7 +96,7 @@ def order_index():
     ):
         return jsonify(orders)
 
-    return render_template("order/index.html", orders=orders)
+    return render_template("order/order_index.html", orders=orders)
 
 
 @app.route("/customers", methods=("GET",))
@@ -122,7 +122,7 @@ def customer_index():
     ):
         return jsonify(customers)
 
-    return render_template("customer/index.html", customers=customers)
+    return render_template("customer/customer_index.html", customers=customers)
 
 
 @app.route("/suppliers", methods=("GET",))
@@ -148,7 +148,7 @@ def supplier_index():
     ):
         return jsonify(suppliers)
 
-    return render_template("supplier/index.html", suppliers=suppliers)
+    return render_template("supplier/supplier_index.html", suppliers=suppliers)
 
 @app.route("/products/<sku>/update", methods=("GET", "POST"))
 def product_update(sku):

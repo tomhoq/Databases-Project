@@ -66,7 +66,7 @@ def product_index():
     ):
         return jsonify(products)
 
-    return render_template("product/index.html", products=products)
+    return render_template("product/product_index.html", products=products)
 
 """
 @app.route("/accounts/<account_number>/update", methods=("GET", "POST"))

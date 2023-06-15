@@ -11,7 +11,7 @@
     
     <label for="name">Name*</label>
     <input name="name" id="name" type="text" placeholder="Name" value="{{ request.form['name'] }}" required>
-    
+
     <label for="email">Email*</label>
     <input name="email" id="email" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
            type="text" placeholder="Email" value="{{ request.form['email'] }}" required>

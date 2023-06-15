@@ -300,38 +300,37 @@ def product_delete(sku):
     """Delete the account."""
     """TODO acho que isto ta mal"""
     
-    # with pool.connection() as conn:
-    #     with conn.cursor(row_factory=namedtuple_row) as cur:
-    #         cur.execute("""START TRANSACTION;""")
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=namedtuple_row) as cur:
+            cur.execute("""START TRANSACTION;""")
 
-    #         cur.execute(
-    #             """
-    #             DELETE FROM contains
-    #             WHERE sku = %(sku)s;
-    #             """,
-    #             {"sku": sku},
-    #         )
+            cur.execute(
+                """
+                DELETE FROM contains
+                WHERE sku = %(sku)s;
+                """,
+                {"sku": sku},
+            )
 
-    #         cur.execute(
-    #             """
-    #             DELETE FROM contains
-    #             WHERE sku = %(sku)s;
-    #             """,
-    #             {"sku": sku},
-    #         )
+            cur.execute(
+                """
+                DELETE FROM contains
+                WHERE sku = %(sku)s;
+                """,
+                {"sku": sku},
+            )
 
-    #         cur.execute(
-    #             """
-    #             DELETE FROM product
-    #             WHERE sku = %(sku)s;
-    #             """,
-    #             {"sku": sku},
-    #         )
+            cur.execute(
+                """
+                DELETE FROM product
+                WHERE sku = %(sku)s;
+                """,
+                {"sku": sku},
+            )
 
-    #         cur.execute(""" COMMIT;""")
+            cur.execute(""" COMMIT;""")
 
-    #     conn.commit()
-        
+        conn.commit()
     return redirect(url_for("product_index"))
 
 @app.route("/ping", methods=("GET",))

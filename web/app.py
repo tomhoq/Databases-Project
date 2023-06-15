@@ -125,6 +125,62 @@ def customer_index():
     return render_template("customer/customer_index.html", customers=customers)
 
 
+@app.route("/customer/customer_register", methods=("POST","GET"))
+def customer_register():
+    """Add a new customer to the db"""
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=namedtuple_row) as cur:
+            count = cur.execute(
+                """
+                SELECT COUNT(*) as count
+                FROM customer;
+                """,
+                {},
+            ).fetchall()
+            log.debug(f"Found {cur.rowcount} rows.")
+            log.debug(f"\n\n\n\n {count}")
+            
+    cust_no = count[0][0] + 1
+    
+    if request.method == "POST":
+        log.debug(f"\n\n\n\n {cust_no}")
+        name = request.form["name"]
+        email = request.form["email"]
+        phone = request.form["phone"]
+        address = request.form["address"]
+        
+        error = None
+
+        if not count:
+            error = "Count is required."
+        if not name:
+            error = "Name is required."
+        if not email:
+            error = "Email is required."
+        if not phone:
+            phone = None
+        if not address:
+            address = None
+        if error is not None:
+            flash(error)
+            
+        else:
+            with pool.connection() as conn:
+                with conn.cursor(row_factory=namedtuple_row) as cur:
+                    cur.execute(
+                        """
+                        INSERT INTO customer (cust_no, name, email, phone, address)
+                        VALUES (%(cust_no)s, %(name)s, %(email)s, %(phone)s, %(address)s);
+                        """,
+                        {"cust_no": cust_no, "name": name, "email": email, 
+                         "phone": phone, "address": address},
+                    )
+                conn.commit()
+            return redirect(url_for("customer_index"))
+    return render_template("customer/customer_register.html", cust_no=cust_no)
+
+
+
 @app.route("/suppliers", methods=("GET",))
 def supplier_index():
     """Show all the suppliers, ordered by name alphabetically."""
@@ -225,7 +281,6 @@ def product_register():
             flash(error)
             
         else:
-            log.debug(f"\n\n\n\n\n\na: %s", ean)
             with pool.connection() as conn:
                 with conn.cursor(row_factory=namedtuple_row) as cur:
                     cur.execute(
@@ -238,10 +293,6 @@ def product_register():
                 conn.commit()
             return redirect(url_for("product_index"))
     return render_template("product/product_register.html")
-            
-        
-
-    
 
 
 @app.route("/products/<sku>/delete", methods=("POST",))

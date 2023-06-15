@@ -2,6 +2,7 @@
 
 {% block header %}
   <h1>{% block title %}Customers{% endblock %}</h1>
+    <a class="button" href="{{ url_for('customer_register')}}">Add</a>
 {% endblock %}
 
 {% block content %}
@@ -15,8 +16,12 @@
         <!-- <a class="action" href="">Edit</a> -->
       </header>
       <p class="body">email: {{ customer['email'] }}</p>
-      <p class="body">phone: {{ customer['phone'] }}</p>
-      <p class="body">address: {{ customer['address'] }}</p>
+      {% if customer['phone']%}
+          <p class="body">phone: {{ customer['phone'] }}</p>
+      {% endif %}
+      {% if customer['phone']%}
+          <p class="body">address: {{ customer['address'] }}</p>
+      {% endif %}
     </article>
     {% if not loop.last %}
       <hr>

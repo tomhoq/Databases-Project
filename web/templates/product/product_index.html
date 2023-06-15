@@ -2,7 +2,7 @@
 
 {% block header %}
   <h1>{% block title %}Products{% endblock %}</h1>
-  <a class="button" href="">Add</a>
+  <a class="button" href="{{ url_for('product_register')}}">Add</a>
 {% endblock %}
 
 {% block content %}
@@ -10,18 +10,22 @@
     <article class="post">
       <header>
         <div>
+            
           <h1>{{ product['name'] }}</h1>
           <div class="about">{{ product['sku'] }}</div>
         </div>
         <a class="action" href="{{ url_for('product_update', sku=product['sku']) }}">Edit</a>
       </header>
-      <p class="body">{{ product['description'] }}</p>
+      {% if product['description'] %}
+        <p class="body">{{ product['description'] }}</p>
+      {% endif %}
       <p class="body">€ {{ product['price'] }}</p>
-      <p class="body">EAN: {{ product['ean'] }}</p>
+      {% if product['description'] %}
+          <p class="body">EAN: {{ product['ean'] }}</p>
+      {% endif %}
     </article>
     {% if not loop.last %}
       <hr>
     {% endif %}
   {% endfor %}
 {% endblock %}
-

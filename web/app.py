@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-import os
 from logging.config import dictConfig
 
 import psycopg
@@ -15,7 +14,7 @@ from psycopg_pool import ConnectionPool
 
 
 # postgres://{user}:{password}@{hostname}:{port}/{database-name}
-DATABASE_URL = os.environ.get("DATABASE_URL", "postgres://db:db@postgres/db")
+DATABASE_URL = "postgres://db:db@postgres/db"
 
 pool = ConnectionPool(conninfo=DATABASE_URL)
 # the pool starts connecting immediately.
@@ -151,53 +150,7 @@ def supplier_index():
 
     return render_template("supplier/supplier_index.html", suppliers=suppliers)
 
-
-@app.route("/product/product_register", methods=("POST",))
-def product_register():
-    """Add a new product to the db"""
-    if request.method == "POST":
-        sku = request.form["sku"]
-        name = request.form["name"]
-        desc = request.form["description"]
-        price = request.form["price"]
-        ean = request.form["ean"]
-
-        error = None
-
-        if not sku:
-            error = "Sku is required."
-        if not name:
-            error = "Name is required."
-        if not desc:
-            error = "Description is required."
-        if not price:
-            error = "Price is required."
-        if not price.isnumeric():
-            error = "Price is required to be numeric."
-        if not ean:
-            error = "EAN is required."
-        if not ean.isnumeric():
-            error = "EAN is required to be numeric."
-        
-        if error is not None:
-            flash(error)
-        
-        else:
-            with pool.connection as conn:
-                with conn.cursor(row_factory=namedtuple_row) as cur:
-                    cur.execute(
-                        """
-                        INSERT INTO product (sku, name, description, price, ean)
-                        VALUES (%(sku)s, %(name)s, %(desc)s, %(price)s, %(ean)s);
-                        """,
-                        {"sku": sku, "name": name, "desc": desc, "price": price, "ean": ean},
-                    )
-                conn.commit()
-            return redirect(url_for("product_index"))
-    return render_template("product/product_register.html")
-
-
-@app.route("/products/<sku>/update", methods=("GET", "POST"))
+@app.route("/products/<sku>/update", methods=("POST","GET"))
 def product_update(sku):
     """Update the product information."""
 
@@ -209,7 +162,7 @@ def product_update(sku):
                 FROM product
                 WHERE sku = %(sku)s;
                 """,
-                {"sku": sku},
+                    {"sku": sku},
             ).fetchone()
             log.debug(f"Found {cur.rowcount} rows.")
 
@@ -242,10 +195,59 @@ def product_update(sku):
     return render_template("product/update.html", product=product)
 
 
+@app.route("/product/product_register", methods=("POST","GET"))
+def product_register():
+    """Add a new product to the db"""
+    if request.method == "POST":
+        sku = request.form["sku"]
+        name = request.form["name"]
+        desc = request.form["description"]
+        price = request.form["price"]
+        ean = request.form["ean"]
+        
+        error = None
+
+        if not sku:
+            error = "Sku is required."
+        if not name:
+            error = "Name is required." 
+        if not desc:
+            desc = None
+        if not price:
+            error = "Price is required."
+        if not price.isnumeric():
+            error = "Price is required to be numeric."
+        if ean and not ean.isnumeric():
+            error = "EAN is required to be numeric."
+        if not ean:
+            ean = None
+        if error is not None:
+            flash(error)
+            
+        else:
+            log.debug(f"\n\n\n\n\n\na: %s", ean)
+            with pool.connection() as conn:
+                with conn.cursor(row_factory=namedtuple_row) as cur:
+                    cur.execute(
+                        """
+                        INSERT INTO product (sku, name, description, price, ean)
+                        VALUES (%(sku)s, %(name)s, %(desc)s, %(price)s, %(ean)s);
+                        """,
+                        {"sku": sku, "name": name, "desc": desc, "price": price, "ean": ean},
+                    )
+                conn.commit()
+            return redirect(url_for("product_index"))
+    return render_template("product/product_register.html")
+            
+        
+
+    
+
+
 @app.route("/products/<sku>/delete", methods=("POST",))
 def product_delete(sku):
     """Delete the account."""
-    # TODO
+    """TODO acho que isto ta mal"""
     
     # with pool.connection() as conn:
     #     with conn.cursor(row_factory=namedtuple_row) as cur:
@@ -278,8 +280,8 @@ def product_delete(sku):
     #         cur.execute(""" COMMIT;""")
 
     #     conn.commit()
+        
     return redirect(url_for("product_index"))
-
 
 @app.route("/ping", methods=("GET",))
 def ping():

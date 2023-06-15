@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block content %}
+
   {% for product in products %}
     <article class="post">
       <header>
@@ -21,11 +22,30 @@
       {% endif %}
       <p class="body">€ {{ product['price'] }}</p>
       {% if product['description'] %}
-          <p class="body">EAN: {{ product['ean'] }}</p>
+          <div class="last_line" >
+              <p class="body">EAN: {{ product['ean'] }}</p>
+              <label for="qty">Quantity to Order</label>
+              <input name="qty" id="qty" type="number" min="0" step="1" value="0" >
+          </div>
       {% endif %}
     </article>
     {% if not loop.last %}
       <hr>
     {% endif %}
   {% endfor %}
+  <script>
+      // Default value example
+      var defaultValue = 0; // Set your desired default value here
+
+      // Get the input element
+      var priceInput = document.getElementById('price');
+
+      // Set the default value
+      priceInput.value = defaultValue;
+
+      // Event listener to update the default value if changed by the user
+      priceInput.addEventListener('input', function(event) {
+        defaultValue = event.target.value;
+      });
+    </script>
 {% endblock %}

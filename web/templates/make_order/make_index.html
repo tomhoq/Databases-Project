@@ -23,10 +23,10 @@
               <div class="last_line" >
                   <p class="body">EAN: {{ product['ean'] }}</p>
               </div>
-              <label for="qty">Quantity to Order</label>
-              <input name="qty" id="qty" type="number" min="0" step="1" value="0" >
-              <input name="sku" id="sku" type="hidden" value="{{product['sku']}}" >
           {% endif %}
+          <label for="qty">Quantity to Order</label>
+          <input name="qty" id="qty" type="number" min="0" step="1" value="0" >
+          <input name="sku" id="sku" type="hidden" value="{{product['sku']}}" >
         </article>
         {% if not loop.last %}
           <hr>
@@ -61,39 +61,46 @@
             answers[pair[0]] = pair[1];
           console.log(answers);
       }
-              
      
-     $(document).ready(function() {
-      $('#submitBtn').click(function() {
-        var qtyValues = [];
-        var skuValues = [];
-        
-        $('input[name="qty"]').each(function() {
-          qtyValues.push($(this).val());
-        });
-        $('input[name="sku"]').each(function() {
-          skuValues.push($(this).val());
-        });
-        
-        var cust_val = $('input[name="cust_no"]').val()
-        
-        var data = {
-          qty: qtyValues
-          sku: skuValues
-          cust_no: cust_val
-        };
+      const someIsNotZero = arr.some(item => item !== 0);
+     
+      if !someIsNotZero{
+         alert('all are not zero')
+      }
+      else{
+     
+         $(document).ready(function() {
+          $('#submitBtn').click(function() {
+            var qtyValues = [];
+            var skuValues = [];
 
-        $.ajax({
-          type: 'post',
-          url: '/make_order',
-          contentType: 'application/json',
-          data: JSON.stringify(data),
-          success: function(response) {
-            console.log(response);
-          }
+            $('input[name="qty"]').each(function() {
+              qtyValues.push($(this).val());
+            });
+            $('input[name="sku"]').each(function() {
+              skuValues.push($(this).val());
+            });
+
+            var cust_val = $('input[name="cust_no"]').val()
+
+            var data = {
+              qty: qtyValues
+              sku: skuValues
+              cust_no: cust_val
+            };
+
+            $.ajax({
+              type: 'post',
+              url: '/make_order',
+              contentType: 'application/json',
+              data: JSON.stringify(data),
+              success: function(response) {
+                console.log(response);
+              }
+            });
+          });
         });
-      });
-    });
+    }
     
     </script>
 {% endblock %}

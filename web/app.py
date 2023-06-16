@@ -11,6 +11,7 @@ from flask import request
 from flask import url_for
 from psycopg.rows import namedtuple_row
 from psycopg_pool import ConnectionPool
+from datetime import datetime
 
 
 # postgres://{user}:{password}@{hostname}:{port}/{database-name}
@@ -88,27 +89,81 @@ def make_order():
     if request.method == "POST":
         quantities = request.form.getlist("qty")
         skus = request.form.getlist("sku")
-        cust_no = request.form.getlist("cust_no")
+        cust_no = int(request.form.getlist("cust_no")[0])
         log.debug(f"\n\n\n\n {quantities}")
         log.debug(f"\n\n\n\n {skus}")
         log.debug(f"\n\n\n\n {cust_no}")
 
 
         error = None
-
-        if not quantities:
+        
+        ok=0
+        for q in quantities:
+            if q!="0":
+                ok=1;
+            
+        if ok != 1:
             error = "Quantities are required."
 
+        if not cust_no:
+            error = "No cust_no given"
         if error is not None:
             flash(error)
+            
         else:
+            with pool.connection() as conn:
+                with conn.cursor(row_factory=namedtuple_row) as cur:
+                    cn = cur.execute(
+                        """
+                        SELECT cust_no FROM customer WHERE cust_no=%(cust_no)s;
+                        """,
+                        {"cust_no": cust_no},
+                    ).fetchone()
+                conn.commit()
+            if not cn:
+                error = "No customer with such number"
+                flash(error)
+            with pool.connection() as conn:
+                with conn.cursor(row_factory=namedtuple_row) as cur:
+                    n_orders = cur.execute(
+                        """
+                        SELECT COUNT(*) as count
+                        FROM orders;
+                        """,
+                        {},
+                    ).fetchall()
+                    log.debug(f"Found {cur.rowcount} rows.")
+            
+            order_no = n_orders[0][0] + 1
+            current_date = datetime.now().date()
+            date = current_date.strftime('%Y-%m-%d')
+            
+            
             with pool.connection() as conn:
                 with conn.cursor(row_factory=namedtuple_row) as cur:
                     cur.execute(
                         """
-                        """
+                        INSERT INTO orders (order_no, cust_no, date)
+                        VALUES (%(order_no)s, %(cust_no)s, %(date)s)
+                        
+                        """,
+                        {"order_no": order_no, "cust_no": cust_no, "date": date},
                     )
+                    for i in range(len(quantities)):
+                        qty = int(quantities[i])
+                        sku = skus[i]
+                        log.debug(f"\n {qty}")
+                        
+                        if qty != 0:
+                            cur.execute(
+                                """
+                                INSERT INTO contains (order_no, SKU, qty)
+                                VALUES (%(order_no)s, %(sku)s, %(qty)s)
+                                """,
+                                {"order_no": order_no, "sku": sku, "qty": qty},
+                            )
                 conn.commit()
+            
             return redirect(url_for("product_index"))
     
     # API-like response is returned to clients that request JSON explicitly (e.g., fetch)
@@ -129,13 +184,14 @@ def order_index():
         with conn.cursor(row_factory=namedtuple_row) as cur:
             orders = cur.execute(
                 """
-                SELECT order_no, cust_no, date
+                SELECT o.order_no, o.cust_no, o.date, c.sku, c.qty
                 FROM orders o
+                INNER JOIN contains c USING (order_no)
                 WHERE NOT EXISTS (
-                    SELECT order_no FROM pay p
+                    SELECT p.order_no FROM pay p
                     WHERE p.order_no = o.order_no
                 )
-                ORDER BY date DESC;
+                ORDER BY o.date DESC;
                 """,
                 {},
             ).fetchall()

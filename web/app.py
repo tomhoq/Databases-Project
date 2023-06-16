@@ -305,6 +305,79 @@ def customer_delete(cust_no):
     return redirect(url_for("customer_index"))
 
 
+@app.route("/customers", methods=("POST",))
+def customer_delete(cust_no):
+    """Delete the customer."""
+    
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=namedtuple_row) as cur:
+            cur.execute("""START TRANSACTION;""")
+
+            cur.execute(
+                """
+                DELETE FROM contains c
+                WHERE EXISTS (
+                    SELECT * FROM order o
+                    WHERE o.order_no = c.order_no
+                    AND cust_no = %(cust_no)s
+                );
+                """,
+                {"cust_no": cust_no},
+            )
+
+            cur.execute(
+                """
+                DELETE FROM process p
+                WHERE EXISTS (
+                    SELECT * FROM order o
+                    WHERE o.order_no = p.order_no
+                    AND cust_no = %(cust_no)s
+                );
+                """,
+                {"cust_no": cust_no},
+            )
+
+            cur.execute(
+                """
+                DELETE FROM pay p
+                WHERE EXISTS (
+                    SELECT * FROM order o
+                    WHERE o.order_no = p.order_no
+                    AND cust_no = %(cust_no)s
+                );
+                """,
+                {"cust_no": cust_no},
+            )
+
+            cur.execute(
+                """
+                DELETE FROM pay
+                WHERE cust_no = %(cust_no)s;
+                """,
+                {"cust_no": cust_no},
+            )
+
+            cur.execute(
+                """
+                DELETE FROM orders
+                WHERE cust_no = %(cust_no)s;
+                """,
+                {"cust_no": cust_no},
+            )
+
+            cur.execute(
+                """
+                DELETE FROM customer
+                WHERE cust_no = %(cust_no)s;
+                """,
+                {"cust_no": cust_no},
+            )
+
+            cur.execute(""" COMMIT;""")
+
+        conn.commit()
+    return redirect(url_for("customer_index"))
+
 
 @app.route("/suppliers", methods=("GET",))
 def supplier_index():
@@ -330,6 +403,7 @@ def supplier_index():
         return jsonify(suppliers)
 
     return render_template("supplier/supplier_index.html", suppliers=suppliers)
+
 
 @app.route("/products/<sku>/update", methods=("POST","GET"))
 def product_update(sku):

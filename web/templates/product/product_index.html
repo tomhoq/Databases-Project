@@ -2,7 +2,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 {% block header %}
-  <h1>{% block title %}Make Order{% endblock %}</h1>
+  <h1>{% block title %}Products{% endblock %}</h1>
   <a class="add_product" href="{{ url_for('product_register')}}">Add Product</a>
 {% endblock %}
 
@@ -85,12 +85,13 @@
           var answers = {};
           for (var pair of formData.entries()) {
             answers[pair[0]] = pair[1];
+          }
           console.log(answers);
-      }
+        });
      
       const someIsNotZero = arr.some(item => item !== 0);
      
-      if !someIsNotZero{
+      if (!someIsNotZero) {
          alert('all are not zero')
       }
       else{
@@ -110,8 +111,8 @@
             var cust_val = $('input[name="cust_no"]').val()
 
             var data = {
-              qty: qtyValues
-              sku: skuValues
+              qty: qtyValues,
+              sku: skuValues,
               cust_no: cust_val
             };
 

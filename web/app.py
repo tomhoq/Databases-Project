@@ -44,8 +44,8 @@ log = app.logger
 
 
 @app.route("/", methods=("GET",))
-@app.route("/make_order", methods=("GET", "POST"))
-def make_order():
+@app.route("/product_index", methods=("GET", "POST"))
+def product_index():
     """Show all the products, ordered by name alphabetically."""
 
     with pool.connection() as conn:
@@ -137,7 +137,7 @@ def make_order():
                             )
                 conn.commit()
             
-            return redirect(url_for("make_order"))
+            return redirect(url_for("product_index"))
     
     # API-like response is returned to clients that request JSON explicitly (e.g., fetch)
     if (
@@ -146,7 +146,7 @@ def make_order():
     ):
         return jsonify(products)
 
-    return render_template("make_order/make_index.html", products=products)
+    return render_template("product/product_index.html", products=products)
 
 
 @app.route("/orders", methods=("GET",))
@@ -403,7 +403,7 @@ def product_update(sku):
                         {"sku": sku, "description": description, "price": price},
                     )
                 conn.commit()
-            return redirect(url_for("make_order"))
+            return redirect(url_for("product_index"))
 
     return render_template("product/product_update.html", product=product)
 
@@ -448,7 +448,7 @@ def product_register():
                         {"sku": sku, "name": name, "desc": desc, "price": price, "ean": ean},
                     )
                 conn.commit()
-            return redirect(url_for("make_order"))
+            return redirect(url_for("product_index"))
     return render_template("product/product_register.html")
 
 
@@ -499,7 +499,7 @@ def product_delete(sku):
             cur.execute(""" COMMIT;""")
 
         conn.commit()
-    return redirect(url_for("make_order"))
+    return redirect(url_for("product_index"))
 
 @app.route("/ping", methods=("GET",))
 def ping():

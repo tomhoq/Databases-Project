@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Product | Add{% endblock %}</h1>
+  <h1>{% block title %}Add Product{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
@@ -24,8 +24,7 @@
     <input type="submit" value="Save">
   </form>
   <hr>
-  <a class= "danger" href="/">Cancel</a></h1>
-  <form action="{{ url_for('make_order') }}" method="post">
-    <input class="danger" type="submit" value="Cancel" onclick="">
+  <form action="{{ url_for('product_index') }}" method="">
+    <input class="danger" type="submit" value="Cancel" onclick="return confirm('Are you sure?');">
   </form>
 {% endblock %}

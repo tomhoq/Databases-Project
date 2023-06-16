@@ -53,6 +53,7 @@
           if (checkbox.checked) {
             component.style.display = "block";
           } else {
+            component.querySelector("#qty").value = 0;
             component.style.display = "none";
           }
       }
@@ -116,7 +117,7 @@
 
             $.ajax({
               type: 'post',
-              url: '/make_order',
+              url: '/product',
               contentType: 'application/json',
               data: JSON.stringify(data),
               success: function(response) {

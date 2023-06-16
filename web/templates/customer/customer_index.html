@@ -2,7 +2,7 @@
 
 {% block header %}
   <h1>{% block title %}Customers{% endblock %}</h1>
-    <a class="button" href="{{ url_for('customer_register')}}">Add</a>
+    <a class="button" href="{{ url_for('customer_register')}}">Add Customer</a>
 {% endblock %}
 
 {% block content %}
@@ -14,7 +14,7 @@
           <div class="about">{{ customer['name'] }}</div>
         </div>
         <form action="{{ url_for('customer_delete', cust_no=customer['cust_no']) }}" method="post">
-          <input class="danger" type="submit" value="Exterminate" onclick="return confirm('Are you sure?');">
+          <input class="danger" type="submit" value="Remove" onclick="return confirm('Are you sure?');">
         </form>
       </header>
       <p class="body">email: {{ customer['email'] }}</p>

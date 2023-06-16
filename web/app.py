@@ -44,32 +44,6 @@ log = app.logger
 
 
 @app.route("/", methods=("GET",))
-@app.route("/products", methods=("GET",))
-def product_index():
-    """Show all the products, ordered by name alphabetically."""
-
-    with pool.connection() as conn:
-        with conn.cursor(row_factory=namedtuple_row) as cur:
-            products = cur.execute(
-                """
-                SELECT sku, name, description, price, ean
-                FROM product
-                ORDER BY name ASC;
-                """,
-                {},
-            ).fetchall()
-            log.debug(f"Found {cur.rowcount} rows.")
-
-    # API-like response is returned to clients that request JSON explicitly (e.g., fetch)
-    if (
-        request.accept_mimetypes["application/json"]
-        and not request.accept_mimetypes["text/html"]
-    ):
-        return jsonify(products)
-
-    return render_template("product/product_index.html", products=products)
-
-
 @app.route("/make_order", methods=("GET", "POST"))
 def make_order():
     """Show all the products, ordered by name alphabetically."""
@@ -163,7 +137,7 @@ def make_order():
                             )
                 conn.commit()
             
-            return redirect(url_for("product_index"))
+            return redirect(url_for("make_order"))
     
     # API-like response is returned to clients that request JSON explicitly (e.g., fetch)
     if (
@@ -405,6 +379,7 @@ def product_update(sku):
 
     if request.method == "POST":
         price = request.form["price"]
+        description = request.form["description"]
 
         error = None
 
@@ -421,13 +396,14 @@ def product_update(sku):
                     cur.execute(
                         """
                         UPDATE product
-                        SET price = %(price)s
+                        SET price = %(price)s,
+                        description = %(description)s
                         WHERE sku = %(sku)s;
                         """,
-                        {"sku": sku, "price": price},
+                        {"sku": sku, "description": description, "price": price},
                     )
                 conn.commit()
-            return redirect(url_for("product_index"))
+            return redirect(url_for("make_order"))
 
     return render_template("product/product_update.html", product=product)
 
@@ -472,7 +448,7 @@ def product_register():
                         {"sku": sku, "name": name, "desc": desc, "price": price, "ean": ean},
                     )
                 conn.commit()
-            return redirect(url_for("product_index"))
+            return redirect(url_for("make_order"))
     return render_template("product/product_register.html")
 
 
@@ -523,7 +499,7 @@ def product_delete(sku):
             cur.execute(""" COMMIT;""")
 
         conn.commit()
-    return redirect(url_for("product_index"))
+    return redirect(url_for("make_order"))
 
 @app.route("/ping", methods=("GET",))
 def ping():

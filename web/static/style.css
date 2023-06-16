@@ -1,5 +1,5 @@
 html {
-  font-family: sans-serif;
+  font-family: "Inter";
   background: #eee;
   padding: 1rem;
 }
@@ -11,14 +11,13 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: serif;
-  color: #377ba8;
+  font-family: "Inter";
+  color: #090F1C;   #cor do texto no corpo principal aqui
   margin: 1rem 0;
+  font-weight: 700;
+    line-height: 19px;
 }
 
-a {
-  color: #377ba8;
-}
 
 hr {
   border: none;
@@ -30,17 +29,36 @@ nav {
   display: flex;
   align-items: center;
   padding: 1.5rem;
+  background: linear-gradient(180deg, #C9291F 0%, rgba(181, 60, 53, 0.85) 100%);
   box-shadow: 0px 6px 4px rgba(0, 0, 0, 0.34);
 }
 
 nav h1 {
+  color: white;
   flex: auto;
   margin: 0;
+    font-family: Inter;
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 39px;
+    letter-spacing: 0em;
+    text-align: left;
+
 }
 
 nav h1 a {
   text-decoration: none;
   padding: 0.25rem 0.5rem;
+}
+
+nav a{
+  color: white;
+  text-decoration:none;
+  transition: transform 0.2s ease-in-out;
+}
+
+nav a:hover{
+    transform: translateY(-3px);
 }
 
 nav ul  {
@@ -53,6 +71,56 @@ nav ul  {
 nav ul li a, nav ul li span, header .action {
   display: block;
   padding: 0.5rem;
+}
+
+.edit {
+  display: inline-block;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  border-radius: 4px;
+  background: #2B2A4C;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.edit:hover {
+  background-color: #23527c;
+}
+
+.edit:focus {
+  outline: none;
+}
+
+.edit:active {
+  background-color: #1e496e;
+}
+
+.price{
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 24px;
+    margin-bottom:4px;
+
+    color: #2B2A4C;
+}
+
+.ean{
+    margin:0px;
+    padding:0px;
+   font-family: 'Inter';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 17px;
+
+    color: #797897;
 }
 
 .content {
@@ -93,11 +161,12 @@ nav ul li a, nav ul li span, header .action {
 }
 
 .post .about {
-  color: slategray;
+  color: #2B2A4C;
   font-style: italic;
 }
 
 .post .body {
+    
   white-space: pre-line;
 }
 
@@ -134,20 +203,43 @@ input[type=submit] {
   min-width: 10em;
 }
 
-.button {
+.submit {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submit:hover {
+  background-color: #45a049;
+}
+
+.submit:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.5);
+}
+
+.add_product {
   text-align: center;
   text-decoration: none;
   padding: 3px;
-  margin-bottom:2px;
+  margin-bottom:6px;
   color: white;
-  border: 2px #377ba8 solid;
-  border-radius: 4px;
-  background-color: #377ba8;
-  transition: width 2s;
+  border: 2px #black solid;
+  border-radius: 6px;
+  background-color: #090F1C;
+  transition: transform 0.5s ease-out;
 }
 
-.button:hover{
-    width: 50px;
+.add_product:hover {
+  transform: scale(1.1);
+}
+
+.add_product:hover{
+    transform: width 100px;
 }
 
 .last_line_product{
@@ -169,8 +261,52 @@ input[type=submit] {
     position: relative;
 }
 
-.qty input[type="checkbox"] + .AddCart{
-    position:absolute
-    top:0px;
-    right:0px;
+
+/* Hide the default checkbox appearance */
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  height: 20px;
+  width: 20px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+  transition: width 0.2s, height 0.2s;
+}
+
+/* Customize the checkbox when checked */
+input[type="checkbox"]:checked {
+  background-color: #333;
+  border-color: #000;
+}
+
+input[type="checkbox"]:hover {
+  width: 23px;
+  height: 23px;
+}
+
+/* Style the checkmark */
+input[type="checkbox"]::before {
+  content: "X";
+  display: inline-block;
+  font-size: 14px;
+  font-weight: bold;
+  color: #fff;
+  transform: rotate(45deg) translateY(-1px);
+}
+
+/* Customize the checkmark when checkbox is checked */
+input[type="checkbox"]:checked::before {
+  content: "";
+}
+
+#who {
+    margin:auto;
+    margin-block: 50px;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 24px;
+    
 }

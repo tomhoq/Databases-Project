@@ -1,11 +1,11 @@
 <!doctype html>
 <title>{% block title %}{% endblock %} - Bank</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link href='https://fonts.googleapis.com/css?family=Inter' rel='stylesheet'>
 <nav>
   <h1><a href="/">Our website</a></h1>
       <ul>
-        <li><a href="{{ url_for('product_index') }}">Products</a>
-        <li><a href="{{ url_for('make_order') }}">Make an Order</a>
+        <li><a href="{{ url_for('make_order') }}">Products</a>
         <li><a href="{{ url_for('order_index') }}">Orders</a>
         <li><a href="{{ url_for('customer_index') }}">Customers</a>
         <li><a href="{{ url_for('supplier_index') }}">Suppliers</a>

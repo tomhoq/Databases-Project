@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 {% block header %}
   <h1>{% block title %}Make Order{% endblock %}</h1>
+  <a class="add_product" href="{{ url_for('product_register')}}">Add Product</a>
 {% endblock %}
 
 {% block content %}
@@ -14,28 +16,48 @@
               <h1>{{ product['name'] }}</h1>
               <div class="about">{{ product['sku'] }}</div>
             </div>
+            <a class="edit" href="{{ url_for('product_update', sku=product['sku']) }}">Edit</a>
           </header>
           {% if product['description'] %}
             <p class="body">{{ product['description'] }}</p>
           {% endif %}
-          <p class="body">€ {{ product['price'] }}</p>
-          {% if product['ean'] %}
-              <div class="last_line" >
-                  <p class="body">EAN: {{ product['ean'] }}</p>
+          <p class="price">€ {{ product['price'] }}</p>
+            
+          <div class="last_line_product" > 
+              <p class="ean">EAN: {{ product['ean'] or "Unexistent"}}</p>
+              <div class="qty">
+                  <label for="addToCart">  Add to cart </label>
+                    <input type="checkbox" onChange="toggleComponentVisibility(this)" name="addToCart">
+                  <div class="AddCart" style="display: none;">
+                      <label for="qty">Quantity:</label>
+                      <input name="qty" id="qty" type="number" min="0" step="1" value="0" >
+                      <input name="sku" id="sku" type="hidden" value="{{product['sku']}}" >
+                  </div>
               </div>
-          {% endif %}
-          <label for="qty">Quantity to Order</label>
-          <input name="qty" id="qty" type="number" min="0" step="1" value="0" >
-          <input name="sku" id="sku" type="hidden" value="{{product['sku']}}" >
+          </div>
+          
         </article>
         {% if not loop.last %}
           <hr>
         {% endif %}
       {% endfor %}
-      <label for="cust_no">Who are you?</label>
+      <label id="who" for="cust_no">Who are you?</label>
       <input name="cust_no" id="cust_no" type="number" min="0" step="1" placeholder="Customer number" value="{{ request.form['cust_no']}}" required>
-      <button type="submit">Submit</button>
+      <button class="submit" type="submit">Finish Order</button>
   </form>
+
+  <script>
+      function toggleComponentVisibility(checkbox) {
+          var component = checkbox.nextElementSibling;
+
+          if (checkbox.checked) {
+            component.style.display = "block";
+          } else {
+            component.style.display = "none";
+          }
+      }
+
+  </script>
 
   <script>
       // Default value example
@@ -51,7 +73,10 @@
       priceInput.addEventListener('input', function(event) {
         defaultValue = event.target.value;
       });
-      
+  </script>
+  
+
+  <script>
       var form = document.getElementById("qtys");
           form.addEventListener('submit', function(event) {
                 event.preventDefault();
@@ -102,5 +127,5 @@
         });
     }
     
-    </script>
+</script>
 {% endblock %}

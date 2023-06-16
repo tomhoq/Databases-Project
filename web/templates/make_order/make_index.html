@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Make Order{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <form id="qtys" method="post">
+      {% for product in products %}
+        <article class="post">
+          <header>
+            <div>
+
+              <h1>{{ product['name'] }}</h1>
+              <div class="about">{{ product['sku'] }}</div>
+            </div>
+          </header>
+          {% if product['description'] %}
+            <p class="body">{{ product['description'] }}</p>
+          {% endif %}
+          <p class="body">€ {{ product['price'] }}</p>
+          {% if product['ean'] %}
+              <div class="last_line" >
+                  <p class="body">EAN: {{ product['ean'] }}</p>
+              </div>
+              <label for="qty">Quantity to Order</label>
+              <input name="qty" id="qty" type="number" min="0" step="1" value="0" >
+              <input name="sku" id="sku" type="hidden" value="{{product['sku']}}" >
+          {% endif %}
+        </article>
+        {% if not loop.last %}
+          <hr>
+        {% endif %}
+      {% endfor %}
+      <label for="cust_no">Who are you?</label>
+      <input name="cust_no" id="cust_no" type="number" min="0" step="1" placeholder="Customer number" value="{{ request.form['cust_no']}}" required>
+      <button type="submit">Submit</button>
+  </form>
+
+  <script>
+      // Default value example
+      var defaultValue = 0; // Set your desired default value here
+
+      // Get the input element
+      var priceInput = document.getElementById('price');
+
+      // Set the default value
+      priceInput.value = defaultValue;
+
+      // Event listener to update the default value if changed by the user
+      priceInput.addEventListener('input', function(event) {
+        defaultValue = event.target.value;
+      });
+      
+      var form = document.getElementById("qtys");
+          form.addEventListener('submit', function(event) {
+                event.preventDefault();
+          var formData = new FormData(form);
+          var answers = {};
+          for (var pair of formData.entries()) {
+            answers[pair[0]] = pair[1];
+          console.log(answers);
+      }
+              
+     
+     $(document).ready(function() {
+      $('#submitBtn').click(function() {
+        var qtyValues = [];
+        var skuValues = [];
+        
+        $('input[name="qty"]').each(function() {
+          qtyValues.push($(this).val());
+        });
+        $('input[name="sku"]').each(function() {
+          skuValues.push($(this).val());
+        });
+        
+        var cust_val = $('input[name="cust_no"]').val()
+        
+        var data = {
+          qty: qtyValues
+          sku: skuValues
+          cust_no: cust_val
+        };
+
+        $.ajax({
+          type: 'post',
+          url: '/make_order',
+          contentType: 'application/json',
+          data: JSON.stringify(data),
+          success: function(response) {
+            console.log(response);
+          }
+        });
+      });
+    });
+    
+    </script>
+{% endblock %}

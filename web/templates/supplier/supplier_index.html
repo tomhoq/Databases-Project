@@ -2,6 +2,7 @@
 
 {% block header %}
   <h1>{% block title %}Suppliers{% endblock %}</h1>
+  <a class="add_supplier" href="{{ url_for('supplier_register')}}">Add Supplier</a>
 {% endblock %}
 
 {% block content %}
@@ -16,9 +17,13 @@
           <input class="danger" type="submit" value="Remove" onclick="return confirm('Are you sure?');">
         </form>
       </header>
-      <p class="body">Address: {{ supplier['address'] }}</p>
+      {% if supplier['address'] %}
+        <p class="body">Address: {{ supplier['address'] }}</p>
+      {% endif %}
       <p class="body">Product supplied: {{ supplier['sku'] }}</p>
-      <p class="body">Date of last supply: {{ supplier['date'] }}</p>
+      {% if supplier['date'] %}
+        <p class="body">Date of last supply: {{ supplier['date'] }}</p>
+      {% endif %}
     </article>
     {% if not loop.last %}
       <hr>

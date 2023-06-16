@@ -206,7 +206,7 @@ def customer_index():
     return render_template("customer/customer_index.html", customers=customers)
 
 
-@app.route("/customer/customer_register", methods=("POST","GET"))
+@app.route("/customer/register", methods=("POST","GET"))
 def customer_register():
     """Add a new customer to the db"""
     with pool.connection() as conn:
@@ -391,6 +391,72 @@ def supplier_delete(TIN):
     return redirect(url_for("supplier_index"))
 
 
+@app.route("/supplier/register", methods=("POST","GET"))
+def supplier_register():
+    """Add a new supplier to the db"""
+    if request.method == "POST":
+        tin = request.form["tin"]
+        name = request.form["name"]
+        address = request.form["address"]
+        sku = request.form["sku"]
+        date = request.form["date"]
+        
+        error = None
+
+        if not tin:
+            error = "TIN is required."
+        if tin and not tin.isnumeric():
+            error = "TIN is required to be numeric."
+        if not name:
+            name = None
+        if not address:
+            address = None
+        if not sku:
+            error = "SKU is required."
+        if not date:
+            date = None
+        
+        with pool.connection() as conn:
+            with conn.cursor(row_factory=namedtuple_row) as cur:
+                _tin = cur.execute(
+                    """
+                    SELECT tin FROM supplier WHERE tin=%(tin)s;
+                    """,
+                    {"tin": tin},
+                ).fetchone()
+            conn.commit()
+        if _tin:
+            error = "TIN already exists."
+        
+        with pool.connection() as conn:
+            with conn.cursor(row_factory=namedtuple_row) as cur:
+                _sku = cur.execute(
+                    """
+                    SELECT sku FROM supplier WHERE sku=%(sku)s;
+                    """,
+                    {"sku": sku},
+                ).fetchone()
+            conn.commit()
+        if not _sku:
+            error = "Product does not exist."
+
+        if error is not None:
+            flash(error)    
+        else:
+            with pool.connection() as conn:
+                with conn.cursor(row_factory=namedtuple_row) as cur:
+                    cur.execute(
+                        """
+                        INSERT INTO supplier (tin, name, address, sku, date)
+                        VALUES (%(tin)s, %(name)s, %(address)s, %(sku)s, %(date)s);
+                        """,
+                        {"tin": tin, "name": name, "address": address, "sku": sku, "date": date},
+                    )
+                conn.commit()
+            return redirect(url_for("supplier_index"))
+    return render_template("supplier/supplier_register.html")
+
+
 @app.route("/products/<sku>/update", methods=("POST","GET"))
 def product_update(sku):
     """Update the product information."""
@@ -438,7 +504,7 @@ def product_update(sku):
     return render_template("product/product_update.html", product=product)
 
 
-@app.route("/product/product_register", methods=("POST","GET"))
+@app.route("/product/register", methods=("POST","GET"))
 def product_register():
     """Add a new product to the db"""
     if request.method == "POST":
@@ -451,7 +517,7 @@ def product_register():
         error = None
 
         if not sku:
-            error = "Sku is required."
+            error = "SKU is required."
         if not name:
             error = "Name is required." 
         if not desc:

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Payment{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <form method="post">
+    <label for="method">How will you pay?</label>
+    <select name="method" id="method">
+      <option value="mbway">MBWAY</option>
+      <option value="paypal">PAYPAL</option>
+      <option value="multibanco">MULTIBANCO</option>
+      <option value="visa">VISA</option>
+    </select>
+    
+    <label for="cust_no">Customer number:</label>
+    <input name="cust_no" id="cust_no" type="text" placeholder="0" required>
+      
+    <input type="submit" value="Save">
+  </form>
+  <hr>
+  <form action="{{ url_for('order_index') }}" method="">
+    <input class="danger" type="submit" value="Cancel" onclick="return confirm('Are you sure?');">
+  </form>
+{% endblock %}

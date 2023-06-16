@@ -7,7 +7,7 @@
 {% block content %}
   <form method="post">
     <label for="sku">SKU*</label>
-    <input name="sku" id="sku" type="text" value="{{ request.form['sku'] }}" required>
+    <input name="sku" id="sku" type="text" placeholder="SKU00000" value="{{ request.form['sku'] }}" required>
     
     <label for="name">Name*</label>
     <input name="name" id="name" type="text" placeholder="Name" value="{{ request.form['name'] }}" required>

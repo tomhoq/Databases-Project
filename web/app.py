@@ -149,6 +149,147 @@ def product_index():
     return render_template("product/product_index.html", products=products)
 
 
+@app.route("/products/<sku>/update", methods=("POST","GET"))
+def product_update(sku):
+    """Update the product information."""
+
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=namedtuple_row) as cur:
+            product = cur.execute(
+                """
+                SELECT sku, price, description
+                FROM product
+                WHERE sku = %(sku)s;
+                """,
+                    {"sku": sku},
+            ).fetchone()
+            log.debug(f"Found {cur.rowcount} rows.")
+
+    if request.method == "POST":
+        price = request.form["price"]
+        description = request.form["description"]
+
+        error = None
+
+        if not price:
+            error = "Price is required."
+            if not price.isnumeric():
+                error = "Price is required to be numeric."
+
+        if error is not None:
+            flash(error)
+        else:
+            with pool.connection() as conn:
+                with conn.cursor(row_factory=namedtuple_row) as cur:
+                    cur.execute(
+                        """
+                        UPDATE product
+                        SET price = %(price)s,
+                        description = %(description)s
+                        WHERE sku = %(sku)s;
+                        """,
+                        {"sku": sku, "description": description, "price": price},
+                    )
+                conn.commit()
+            return redirect(url_for("product_index"))
+
+    return render_template("product/product_update.html", product=product)
+
+
+@app.route("/product/register", methods=("POST","GET"))
+def product_register():
+    """Add a new product to the db"""
+    if request.method == "POST":
+        sku = request.form["sku"]
+        name = request.form["name"]
+        desc = request.form["description"]
+        price = request.form["price"]
+        ean = request.form["ean"]
+        
+        error = None
+
+        if not sku:
+            error = "SKU is required."
+        if not name:
+            error = "Name is required." 
+        if not desc:
+            desc = None
+        if not price:
+            error = "Price is required."
+        if not price.isnumeric():
+            error = "Price is required to be numeric."
+        if ean and not ean.isnumeric():
+            error = "EAN is required to be numeric."
+        if not ean:
+            ean = None
+        if error is not None:
+            flash(error)
+            
+        else:
+            with pool.connection() as conn:
+                with conn.cursor(row_factory=namedtuple_row) as cur:
+                    cur.execute(
+                        """
+                        INSERT INTO product (sku, name, description, price, ean)
+                        VALUES (%(sku)s, %(name)s, %(desc)s, %(price)s, %(ean)s);
+                        """,
+                        {"sku": sku, "name": name, "desc": desc, "price": price, "ean": ean},
+                    )
+                conn.commit()
+            return redirect(url_for("product_index"))
+    return render_template("product/product_register.html")
+
+
+@app.route("/products/<sku>/delete", methods=("POST",))
+def product_delete(sku):
+    """Delete the product."""
+    
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=namedtuple_row) as cur:
+            cur.execute("""START TRANSACTION;""")
+
+            cur.execute(
+                """
+                DELETE FROM delivery d
+                WHERE EXISTS (
+                    SELECT * FROM supplier s
+                    WHERE s.TIN = d.TIN
+                    AND sku = %(sku)s
+                );
+                """,
+                {"sku": sku},
+            )
+
+            cur.execute(
+                """
+                DELETE FROM supplier
+                WHERE sku = %(sku)s;
+                """,
+                {"sku": sku},
+            )
+
+            cur.execute(
+                """
+                DELETE FROM contains
+                WHERE sku = %(sku)s;
+                """,
+                {"sku": sku},
+            )
+
+            cur.execute(
+                """
+                DELETE FROM product
+                WHERE sku = %(sku)s;
+                """,
+                {"sku": sku},
+            )
+
+            cur.execute(""" COMMIT;""")
+
+        conn.commit()
+    return redirect(url_for("product_index"))
+
+
 @app.route("/orders", methods=("GET",))
 def order_index():
     """Show all the unpaid orders, ordered from most recent date."""
@@ -157,13 +298,21 @@ def order_index():
         with conn.cursor(row_factory=namedtuple_row) as cur:
             orders = cur.execute(
                 """
-                SELECT o.order_no, o.cust_no, o.date, c.sku, c.qty
+                SELECT o.order_no, o.cust_no, o.date
                 FROM orders o
-                INNER JOIN contains c USING (order_no)
                 WHERE NOT EXISTS (
                     SELECT p.order_no FROM pay p
                     WHERE p.order_no = o.order_no
                 )
+                ORDER BY o.order_no DESC;
+                """,
+                {},
+            ).fetchall()
+            order_products = cur.execute(
+                """
+                SELECT o.order_no, c.sku, c.qty
+                FROM orders o
+                INNER JOIN contains c USING (order_no)
                 ORDER BY o.order_no DESC;
                 """,
                 {},
@@ -177,7 +326,39 @@ def order_index():
     ):
         return jsonify(orders)
 
-    return render_template("order/order_index.html", orders=orders)
+    return render_template("order/order_index.html", orders=orders, order_products=order_products)
+
+
+@app.route("/orders/<order_no>-<cust_no>/pay", methods=("POST","GET"))
+def pay_order(order_no, cust_no):
+    log.debug(f" {order_no, cust_no} ")
+    
+    return redirect(url_for("verify_payment", order_no=order_no, cust_no=cust_no))
+
+
+@app.route("/orders/<order_no>-<cust_no>/verify_payment", methods=("POST","GET"))
+def verify_payment(order_no, cust_no):
+    if request.method == "POST":
+        user = request.form["cust_no"]
+        error = None
+        if user!=cust_no:
+            error = "This is order does not belong to the user"
+        if error:
+            flash(error)
+        with pool.connection() as conn:
+            with conn.cursor(row_factory=namedtuple_row) as cur:
+                cur.execute(
+                    """
+                    INSERT INTO pay (order_no, cust_no)
+                    VALUES (%(order_no)s, %(cust_no)s)
+                    """,
+                    {"order_no": order_no, "cust_no": cust_no},
+                )
+
+            conn.commit()
+
+            return redirect(url_for("order_index"))
+    return render_template("order/order_payment.html")
 
 
 @app.route("/customers", methods=("GET",))
@@ -361,36 +542,6 @@ def supplier_index():
     return render_template("supplier/supplier_index.html", suppliers=suppliers)
 
 
-@app.route("/suppliers/<TIN>/delete", methods=("POST",))
-def supplier_delete(TIN):
-    """Delete the supplier."""
-    
-    with pool.connection() as conn:
-        with conn.cursor(row_factory=namedtuple_row) as cur:
-            cur.execute("""START TRANSACTION;""")
-
-            cur.execute(
-                """
-                DELETE FROM delivery
-                WHERE TIN = %(TIN)s;
-                """,
-                {"TIN": TIN},
-            )
-
-            cur.execute(
-                """
-                DELETE FROM supplier
-                WHERE TIN = %(TIN)s;
-                """,
-                {"TIN": TIN},
-            )
-
-            cur.execute(""" COMMIT;""")
-
-        conn.commit()
-    return redirect(url_for("supplier_index"))
-
-
 @app.route("/supplier/register", methods=("POST","GET"))
 def supplier_register():
     """Add a new supplier to the db"""
@@ -457,100 +608,9 @@ def supplier_register():
     return render_template("supplier/supplier_register.html")
 
 
-@app.route("/products/<sku>/update", methods=("POST","GET"))
-def product_update(sku):
-    """Update the product information."""
-
-    with pool.connection() as conn:
-        with conn.cursor(row_factory=namedtuple_row) as cur:
-            product = cur.execute(
-                """
-                SELECT sku, price, description
-                FROM product
-                WHERE sku = %(sku)s;
-                """,
-                    {"sku": sku},
-            ).fetchone()
-            log.debug(f"Found {cur.rowcount} rows.")
-
-    if request.method == "POST":
-        price = request.form["price"]
-        description = request.form["description"]
-
-        error = None
-
-        if not price:
-            error = "Price is required."
-            if not price.isnumeric():
-                error = "Price is required to be numeric."
-
-        if error is not None:
-            flash(error)
-        else:
-            with pool.connection() as conn:
-                with conn.cursor(row_factory=namedtuple_row) as cur:
-                    cur.execute(
-                        """
-                        UPDATE product
-                        SET price = %(price)s,
-                        description = %(description)s
-                        WHERE sku = %(sku)s;
-                        """,
-                        {"sku": sku, "description": description, "price": price},
-                    )
-                conn.commit()
-            return redirect(url_for("product_index"))
-
-    return render_template("product/product_update.html", product=product)
-
-
-@app.route("/product/register", methods=("POST","GET"))
-def product_register():
-    """Add a new product to the db"""
-    if request.method == "POST":
-        sku = request.form["sku"]
-        name = request.form["name"]
-        desc = request.form["description"]
-        price = request.form["price"]
-        ean = request.form["ean"]
-        
-        error = None
-
-        if not sku:
-            error = "SKU is required."
-        if not name:
-            error = "Name is required." 
-        if not desc:
-            desc = None
-        if not price:
-            error = "Price is required."
-        if not price.isnumeric():
-            error = "Price is required to be numeric."
-        if ean and not ean.isnumeric():
-            error = "EAN is required to be numeric."
-        if not ean:
-            ean = None
-        if error is not None:
-            flash(error)
-            
-        else:
-            with pool.connection() as conn:
-                with conn.cursor(row_factory=namedtuple_row) as cur:
-                    cur.execute(
-                        """
-                        INSERT INTO product (sku, name, description, price, ean)
-                        VALUES (%(sku)s, %(name)s, %(desc)s, %(price)s, %(ean)s);
-                        """,
-                        {"sku": sku, "name": name, "desc": desc, "price": price, "ean": ean},
-                    )
-                conn.commit()
-            return redirect(url_for("product_index"))
-    return render_template("product/product_register.html")
-
-
-@app.route("/products/<sku>/delete", methods=("POST",))
-def product_delete(sku):
-    """Delete the product."""
+@app.route("/suppliers/<TIN>/delete", methods=("POST",))
+def supplier_delete(TIN):
+    """Delete the supplier."""
     
     with pool.connection() as conn:
         with conn.cursor(row_factory=namedtuple_row) as cur:
@@ -558,44 +618,25 @@ def product_delete(sku):
 
             cur.execute(
                 """
-                DELETE FROM delivery d
-                WHERE EXISTS (
-                    SELECT * FROM supplier s
-                    WHERE s.TIN = d.TIN
-                    AND sku = %(sku)s
-                );
+                DELETE FROM delivery
+                WHERE TIN = %(TIN)s;
                 """,
-                {"sku": sku},
+                {"TIN": TIN},
             )
 
             cur.execute(
                 """
                 DELETE FROM supplier
-                WHERE sku = %(sku)s;
+                WHERE TIN = %(TIN)s;
                 """,
-                {"sku": sku},
-            )
-
-            cur.execute(
-                """
-                DELETE FROM contains
-                WHERE sku = %(sku)s;
-                """,
-                {"sku": sku},
-            )
-
-            cur.execute(
-                """
-                DELETE FROM product
-                WHERE sku = %(sku)s;
-                """,
-                {"sku": sku},
+                {"TIN": TIN},
             )
 
             cur.execute(""" COMMIT;""")
 
         conn.commit()
-    return redirect(url_for("product_index"))
+    return redirect(url_for("supplier_index"))
+
 
 @app.route("/ping", methods=("GET",))
 def ping():

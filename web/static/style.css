@@ -12,7 +12,7 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: "Inter";
-  color: #090F1C;   #cor do texto no corpo principal aqui
+  color: #090F1C;   
   margin: 1rem 0;
   font-weight: 700;
     line-height: 19px;
@@ -164,7 +164,6 @@ label #who {
 
 
 .submit {
-  margin-bottom
   width: 139px;
   height: 27px;
   background: #DC5DD7;
@@ -175,9 +174,9 @@ label #who {
   border: none;
   cursor: pointer;
   transition: background-color 0.2s;
-  text-align: center
+  text-align: center;
   font-family: 'Inter';
-    font-style: normal;
+  font-style: normal;
     font-weight: 700;
     font-size: 14px;
     line-height: 17px;
@@ -259,7 +258,7 @@ input[type=submit] {
 
 
 
-.add_product, .add_customer {
+.add_product, .add_customer, .add_supplier {
   text-align: center;
   text-decoration: none;
   padding: 3px 5px 3px 5px;
@@ -271,7 +270,7 @@ input[type=submit] {
   transition: transform 0.5s ease-out;
 }
 
-.add_product:hover, .add_customer:hover {
+.add_product:hover, .add_customer:hover, .add_supplier:hover {
   transform: scale(1.1);
 }
 
@@ -293,6 +292,17 @@ input[type=submit] {
     width: 40px;
     position: relative;
 }
+
+.remove {
+    background: linear-gradient(180deg, #C9291F 0%, rgba(181, 60, 53, 0.85) 100%);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    /* Add any other desired styles */
+  }
 
 
 /* Hide the default checkbox appearance */

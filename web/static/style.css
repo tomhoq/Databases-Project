@@ -61,6 +61,7 @@ nav a:hover{
     transform: translateY(-3px);
 }
 
+
 nav ul  {
   display: flex;
   list-style: none;
@@ -138,6 +139,59 @@ nav ul li a, nav ul li span, header .action {
   margin: 1rem 0 0.25rem 0;
 }
 
+#submit_rect{
+    width:227px;
+    height:108px;
+    background: #F9F7F7;
+    border: 1px solid #000000;
+    margin:auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-top: 17px;
+    border-radius:3px;
+}
+
+label #who {
+    margin:auto;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 17px;
+    
+}
+
+
+.submit {
+  margin-bottom
+  width: 139px;
+  height: 27px;
+  background: #DC5DD7;
+  border-radius: 38px;
+  padding: 0px 15px 0px 15px;
+  background-color: #DC5DD7;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  text-align: center
+  font-family: 'Inter';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 17px;
+}
+
+.submit:hover {
+  background-color: #C861C4;
+}
+
+.submit:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.5);
+}
+
 .flash {
   margin: 1em 0;
   padding: 1em;
@@ -203,38 +257,21 @@ input[type=submit] {
   min-width: 10em;
 }
 
-.submit {
-  padding: 10px 20px;
-  background-color: #4CAF50;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
 
-.submit:hover {
-  background-color: #45a049;
-}
 
-.submit:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.5);
-}
-
-.add_product, .add_customer, .add_supplier {
+.add_product, .add_customer {
   text-align: center;
   text-decoration: none;
-  padding: 3px;
+  padding: 3px 5px 3px 5px;
   margin-bottom:6px;
   color: white;
-  border: 2px #black solid;
+  border: 2px #090F1C solid;
   border-radius: 6px;
   background-color: #090F1C;
   transition: transform 0.5s ease-out;
 }
 
-.add_product:hover, .add_customer:hover, .add_supplier:hover {
+.add_product:hover, .add_customer:hover {
   transform: scale(1.1);
 }
 
@@ -298,11 +335,3 @@ input[type="checkbox"]:checked::before {
   content: "";
 }
 
-#who {
-    margin:auto;
-    margin-block: 50px;
-    font-weight: 700;
-    font-size: 20px;
-    line-height: 24px;
-    
-}

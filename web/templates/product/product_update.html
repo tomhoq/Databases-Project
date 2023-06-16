@@ -19,6 +19,10 @@
     
     <input type="submit" value="Save">
   </form>
+</form>
+  <form action="{{ url_for('product_index') }}" method="">
+  <input class="danger" type="submit" value="Cancel" onclick="return confirm('Are you sure?');">
+</form>
   <hr>
   <form action="{{ url_for('product_delete', sku=product['sku']) }}" method="post">
     <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">

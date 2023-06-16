@@ -41,9 +41,11 @@
           <hr>
         {% endif %}
       {% endfor %}
-      <label id="who" for="cust_no">Who are you?</label>
-      <input name="cust_no" id="cust_no" type="number" min="0" step="1" placeholder="Customer number" value="{{ request.form['cust_no']}}" required>
-      <button class="submit" type="submit">Finish Order</button>
+      <div id="submit_rect">
+        <label id="who" for="cust_no">Customer number</label>
+        <input name="cust_no" id="cust_no" type="number" min="0" step="1" placeholder="Customer number" value="{{ request.form['cust_no']}}" required>
+        <button class="submit" type="submit">Confirm Order</button>
+    </div>
   </form>
 
   <script>
@@ -87,7 +89,7 @@
             answers[pair[0]] = pair[1];
           }
           console.log(answers);
-        });
+        };
      
       const someIsNotZero = arr.some(item => item !== 0);
      

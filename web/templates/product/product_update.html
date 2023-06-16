@@ -15,7 +15,7 @@
     
     <label for="description">Description</label>
     <input name="description" id="description" type="text" placeholder="Description" 
-      value="{{ request.form['description'] or product['description'] }}" required>
+      value="{{ request.form['description'] or product['description'] }}">
     
     <input type="submit" value="Save">
   </form>

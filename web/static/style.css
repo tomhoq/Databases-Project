@@ -222,7 +222,7 @@ input[type=submit] {
   box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.5);
 }
 
-.add_product {
+.add_product, .add_customer {
   text-align: center;
   text-decoration: none;
   padding: 3px;
@@ -234,12 +234,8 @@ input[type=submit] {
   transition: transform 0.5s ease-out;
 }
 
-.add_product:hover {
+.add_product:hover, .add_customer:hover {
   transform: scale(1.1);
-}
-
-.add_product:hover{
-    transform: width 100px;
 }
 
 .last_line_product{

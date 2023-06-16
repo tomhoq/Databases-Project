@@ -10,9 +10,11 @@
       <header>
         <div>
           <h1>{{ supplier['name'] }}</h1>
-          <div class="about">{{ supplier['address'] }}</div>
+          <div class="about">{{ supplier['tin'] }}</div>
         </div>
-        <!-- <a class="action" href="">Edit</a> -->
+        <form action="{{ url_for('supplier_delete', TIN=supplier['tin']) }}" method="post">
+          <input class="danger" type="submit" value="Remove" onclick="return confirm('Are you sure?');">
+        </form>
       </header>
       <p class="body">Address: {{ supplier['address'] }}</p>
       <p class="body">Product supplied: {{ supplier['sku'] }}</p>

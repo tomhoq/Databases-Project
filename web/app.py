@@ -261,7 +261,7 @@ def customer_register():
     return render_template("customer/customer_register.html", cust_no=cust_no)
 
 
-@app.route("/customers", methods=("POST",))
+@app.route("/customers/<cust_no>/delete", methods=("POST",))
 def customer_delete(cust_no):
     """Delete the customer."""
     
@@ -273,7 +273,7 @@ def customer_delete(cust_no):
                 """
                 DELETE FROM contains c
                 WHERE EXISTS (
-                    SELECT * FROM order o
+                    SELECT * FROM orders o
                     WHERE o.order_no = c.order_no
                     AND cust_no = %(cust_no)s
                 );
@@ -285,7 +285,7 @@ def customer_delete(cust_no):
                 """
                 DELETE FROM process p
                 WHERE EXISTS (
-                    SELECT * FROM order o
+                    SELECT * FROM orders o
                     WHERE o.order_no = p.order_no
                     AND cust_no = %(cust_no)s
                 );
@@ -297,7 +297,7 @@ def customer_delete(cust_no):
                 """
                 DELETE FROM pay p
                 WHERE EXISTS (
-                    SELECT * FROM order o
+                    SELECT * FROM orders o
                     WHERE o.order_no = p.order_no
                     AND cust_no = %(cust_no)s
                 );
@@ -359,6 +359,36 @@ def supplier_index():
         return jsonify(suppliers)
 
     return render_template("supplier/supplier_index.html", suppliers=suppliers)
+
+
+@app.route("/suppliers/<TIN>/delete", methods=("POST",))
+def supplier_delete(TIN):
+    """Delete the supplier."""
+    
+    with pool.connection() as conn:
+        with conn.cursor(row_factory=namedtuple_row) as cur:
+            cur.execute("""START TRANSACTION;""")
+
+            cur.execute(
+                """
+                DELETE FROM delivery
+                WHERE TIN = %(TIN)s;
+                """,
+                {"TIN": TIN},
+            )
+
+            cur.execute(
+                """
+                DELETE FROM supplier
+                WHERE TIN = %(TIN)s;
+                """,
+                {"TIN": TIN},
+            )
+
+            cur.execute(""" COMMIT;""")
+
+        conn.commit()
+    return redirect(url_for("supplier_index"))
 
 
 @app.route("/products/<sku>/update", methods=("POST","GET"))

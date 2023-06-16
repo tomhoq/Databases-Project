@@ -6,8 +6,8 @@
 
 {% block content %}
   <form method="post">
-    <label for="tin">TIN*</label>
-    <input name="tin" id="tin" type="text" value="{{ request.form['tin'] }}" required>
+    <label for="tin">TIN *</label>
+    <input name="tin" id="tin" type="text" value="{{ request.form['tin'] }}" placeholder="TIN" required>
     
     <label for="name">Name</label>
     <input name="name" id="name" type="text" placeholder="Name" value="{{ request.form['name'] }}">
@@ -15,16 +15,16 @@
     <label for="address">Address</label>
     <input name="address" id="address" type="text" placeholder="Address" value="{{ request.form['address'] }}" >
 
-    <label for="sku">SKU*</label>
+    <label for="sku">SKU *</label>
     <input name="sku" id="sku" type="text" placeholder="SKU" value="{{ request.form['sku']}}" required>
     
     <label for="date">Date</label>
     <input name="date" id="date" type="date" placeholder="2022-01-01" value="{{ request.form['date']}}">
 
-    <input type="submit" value="Save">
+    <input type="submit" class="save-button" value="Save">
   </form>
   <hr>
   <form action="{{ url_for('supplier_index') }}" method="">
-    <input class="danger" type="submit" value="Cancel" onclick="return confirm('Are you sure?');">
+    <input class="remove" type="submit" value="Cancel" onclick="return confirm('Are you sure?');">
   </form>
 {% endblock %}

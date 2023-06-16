@@ -1,29 +1,30 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Customers{% endblock %}</h1>
-    <a class="add_customer" href="{{ url_for('customer_register')}}">Add Customer</a>
+  <h1>{% block title %}Orders{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
-  {% for customer in customers %}
+  {% for order in orders %}
     <article class="post">
       <header>
         <div>
-          <h1>{{ customer['cust_no'] }}</h1>
-          <div class="about">{{ customer['name'] }}</div>
+          <h1>{{ order['order_no'] }}</h1>
         </div>
-        <form action="{{ url_for('customer_delete', cust_no=customer['cust_no']) }}" method="post">
-          <input class="remove" type="submit" value="Remove" onclick="return confirm('Are you sure?');">
-        </form>
       </header>
-      <p class="body">email: {{ customer['email'] }}</p>
-      {% if customer['phone']%}
-          <p class="body">phone: {{ customer['phone'] }}</p>
-      {% endif %}
-      {% if customer['phone']%}
-          <p class="body">address: {{ customer['address'] }}</p>
-      {% endif %}
+        <p class="cust">Cust_no: <span class="info">{{ order['cust_no'] }}</span></p>
+      <p class="body">Products ordered:</p>
+      <div class="products">
+          {% for product in order_products %}
+              {% if product['order_no'] == order['order_no'] %}
+                  <p class="sku_ord">{{ product['sku'] }}  <span class="info">x{{ product['qty'] }}</span></p>
+              {%endif%}
+          {% endfor %}
+        </div>
+      <div class="last_ord">
+          <p class="date">Date: <span class="info">{{ order['date'] }}</span></p>
+          <a class="pay_ord" href="{{ url_for('pay_order', order_no=order['order_no'], cust_no=order['cust_no'])}}">Pay</a> 
+      </div>
     </article>
     {% if not loop.last %}
       <hr>

@@ -257,17 +257,22 @@ input[type=submit] {
   min-width: 10em;
 }
 
+.ist{
+    font-weight:bolder;
+}
 
 
 .add_product, .add_customer, .add_supplier {
   text-align: center;
   text-decoration: none;
+  font-size: 0.86em;
   padding: 3px 5px 3px 5px;
+  width:120px;
   margin-bottom:6px;
   color: white;
   border: 2px #090F1C solid;
-  border-radius: 6px;
-  background-color: #090F1C;
+  border-radius: 4px;
+  background-color: #2B2A4C;
   transition: transform 0.5s ease-out;
 }
 
@@ -293,18 +298,6 @@ input[type=submit] {
     width: 40px;
     position: relative;
 }
-
-
-.remove {
-    background: linear-gradient(180deg, #C9291F 0%, rgba(181, 60, 53, 0.85) 100%);
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    font-weight: bold;
-    cursor: pointer;
-    /* Add any other desired styles */
-  }
 
 
 /* Hide the default checkbox appearance */
@@ -412,22 +405,26 @@ input[type="checkbox"]:checked::before {
   }
 
 
-.remove_reg {
-    background: linear-gradient(180deg, #C9291F 0%, rgba(181, 60, 53, 0.85) 100%);
+.remove_reg, .remove {
+    background: #C9291F;
     color: white;
     border: none;
     padding: 8px 16px;
     border-radius: 4px;
-    font-weight: bold;
+    font-weight: normal;
     cursor: pointer;
-    /* Add any other desired styles */
+    transition: background-color 0.3s ease;
   }
 
-  .remove_reg:hover {
-    background-color: #0056b3;
-  }
+.remove_reg:hover, .remove:hover {
+    background-color: #B0100B;
+}
 
-  .remove_reg:focus {
+.remove_reg:focus {
     outline: none;
     box-shadow: 0 0 0 2px #0056b3;
-  }
+}
+
+.info{
+    font-weight: 600;
+}

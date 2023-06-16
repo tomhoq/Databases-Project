@@ -9,15 +9,15 @@
     <label for="cust_no">Cust_no</label>
     <input name="cust_no" id="cust_no" type="text" value="{{ cust_no }}" disabled>
     
-    <label for="name">Name*</label>
+    <label for="name">Name *</label>
     <input name="name" id="name" type="text" placeholder="Name" value="{{ request.form['name'] }}" required>
     
-    <label for="email">Email*</label>
+    <label for="email">Email *</label>
     <input name="email" id="email" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
            type="text" placeholder="Email" value="{{ request.form['email'] }}" required>
 
     <label for="phone">Phone</label>
-    <input name="phone" id="phone" type="tel" pattern="[0-9]{9}" placeholder="924..." value="{{ request.form['phone']}}" >
+    <input name="phone" id="phone" type="tel" pattern="[0-9]{9}" placeholder="Phone" value="{{ request.form['phone']}}" >
     
     <label for="address">Address</label>
     <input name="address" id="address" type="text"  placeholder="Address" value="{{ request.form['address']}}" >

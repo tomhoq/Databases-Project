@@ -558,6 +558,8 @@ def supplier_register():
             error = "TIN is required."
         if tin and not tin.isnumeric():
             error = "TIN is required to be numeric."
+        if len(tin) != 9:
+            error = "TIN must have 9 digits."
         if not name:
             name = None
         if not address:
@@ -583,7 +585,7 @@ def supplier_register():
             with conn.cursor(row_factory=namedtuple_row) as cur:
                 _sku = cur.execute(
                     """
-                    SELECT sku FROM supplier WHERE sku=%(sku)s;
+                    SELECT sku FROM product WHERE sku=%(sku)s;
                     """,
                     {"sku": sku},
                 ).fetchone()

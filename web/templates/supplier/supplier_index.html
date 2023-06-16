@@ -14,15 +14,15 @@
           <div class="about">{{ supplier['tin'] }}</div>
         </div>
         <form action="{{ url_for('supplier_delete', TIN=supplier['tin']) }}" method="post">
-          <input class="danger" type="submit" value="Remove" onclick="return confirm('Are you sure?');">
+          <input class="remove" type="submit" value="Remove" onclick="return confirm('Are you sure?');">
         </form>
       </header>
       {% if supplier['address'] %}
-        <p class="body">Address: {{ supplier['address'] }}</p>
+        <p class="body">Address: <span class="info">{{ supplier['address'] }}</span></p>
       {% endif %}
-      <p class="body">Product supplied: {{ supplier['sku'] }}</p>
+        <p class="body">Product supplied: <span class="info">{{ supplier['sku'] }}</span></p>
       {% if supplier['date'] %}
-        <p class="body">Date of last supply: {{ supplier['date'] }}</p>
+        <p class="body">Date of last supply: <span class="info">{{ supplier['date'] }}</span></p>
       {% endif %}
     </article>
     {% if not loop.last %}

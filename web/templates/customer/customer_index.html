@@ -1,135 +1,33 @@
 {% extends 'base.html' %}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 {% block header %}
-  <h1>{% block title %}Products{% endblock %}</h1>
-  <a class="add_product" href="{{ url_for('product_register')}}">Add Product</a>
+  <h1>{% block title %}Orders{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
-  <form id="qtys" method="post">
-      {% for product in products %}
-        <article class="post">
-          <header>
-            <div>
-
-              <h1>{{ product['name'] }}</h1>
-              <div class="about">{{ product['sku'] }}</div>
-            </div>
-            <a class="edit" href="{{ url_for('product_update', sku=product['sku']) }}">Edit</a>
-          </header>
-          {% if product['description'] %}
-            <p class="body">{{ product['description'] }}</p>
-          {% endif %}
-          <p class="price">€ {{ product['price'] }}</p>
-            
-          <div class="last_line_product" > 
-              <p class="ean">EAN: {{ product['ean'] or "Unexistent"}}</p>
-              <div class="qty">
-                  <label for="addToCart">  Add to cart </label>
-                    <input type="checkbox" onChange="toggleComponentVisibility(this)" name="addToCart">
-                  <div class="AddCart" style="display: none;">
-                      <label for="qty">Quantity:</label>
-                      <input name="qty" id="qty" type="number" min="0" step="1" value="0" >
-                      <input name="sku" id="sku" type="hidden" value="{{product['sku']}}" >
-                  </div>
-              </div>
-          </div>
-          
-        </article>
-        {% if not loop.last %}
-          <hr>
-        {% endif %}
-      {% endfor %}
-      <div id="submit_rect">
-        <label id="who" for="cust_no">Customer number</label>
-        <input name="cust_no" id="cust_no" type="number" min="0" step="1" placeholder="Customer number" value="{{ request.form['cust_no']}}" required>
-        <button class="submit" type="submit">Confirm Order</button>
-    </div>
-  </form>
-
-  <script>
-      function toggleComponentVisibility(checkbox) {
-          var component = checkbox.nextElementSibling;
-
-          if (checkbox.checked) {
-            component.style.display = "block";
-          } else {
-            component.querySelector("#qty").value = 0;
-            component.style.display = "none";
-          }
-      }
-
-  </script>
-
-  <script>
-      // Default value example
-      var defaultValue = 0; // Set your desired default value here
-
-      // Get the input element
-      var priceInput = document.getElementById('price');
-
-      // Set the default value
-      priceInput.value = defaultValue;
-
-      // Event listener to update the default value if changed by the user
-      priceInput.addEventListener('input', function(event) {
-        defaultValue = event.target.value;
-      });
-  </script>
-  
-
-  <script>
-      var form = document.getElementById("qtys");
-          form.addEventListener('submit', function(event) {
-                event.preventDefault();
-          var formData = new FormData(form);
-          var answers = {};
-          for (var pair of formData.entries()) {
-            answers[pair[0]] = pair[1];
-          }
-          console.log(answers);
-        };
-     
-      const someIsNotZero = arr.some(item => item !== 0);
-     
-      if (!someIsNotZero) {
-         alert('all are not zero')
-      }
-      else{
-     
-         $(document).ready(function() {
-          $('#submitBtn').click(function() {
-            var qtyValues = [];
-            var skuValues = [];
-
-            $('input[name="qty"]').each(function() {
-              qtyValues.push($(this).val());
-            });
-            $('input[name="sku"]').each(function() {
-              skuValues.push($(this).val());
-            });
-
-            var cust_val = $('input[name="cust_no"]').val()
-
-            var data = {
-              qty: qtyValues,
-              sku: skuValues,
-              cust_no: cust_val
-            };
-
-            $.ajax({
-              type: 'post',
-              url: '/product',
-              contentType: 'application/json',
-              data: JSON.stringify(data),
-              success: function(response) {
-                console.log(response);
-              }
-            });
-          });
-        });
-    }
-    
-</script>
+  {% for order in orders %}
+    <article class="post">
+      <header>
+        <div>
+          <h1>{{ order['order_no'] }}</h1>
+        </div>
+      </header>
+      <p class="cust">Cust_no: {{ order['cust_no'] }}</p>
+      <p class="body">Products ordered:</p>
+      <div class="products">
+          {% for product in order_products %}
+              {% if product['order_no'] == order['order_no'] %}
+                  <p class="sku_ord">{{ product['sku'] }}  <span class="qty_ord">x{{ product['qty'] }}</span></p>
+              {%endif%}
+          {% endfor %}
+        </div>
+      <div class="last_ord">
+          <p class="date">Date: {{ order['date'] }}</p>
+          <a class="pay_ord" href="{{ url_for('pay_order', order_no=order['order_no'], cust_no=order['cust_no'])}}">Pay</a> 
+      </div>
+    </article>
+    {% if not loop.last %}
+      <hr>
+    {% endif %}
+  {% endfor %}
 {% endblock %}

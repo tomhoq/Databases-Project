@@ -21,10 +21,10 @@
     <label for="ean">EAN</label>
     <input name="ean" id="ean" type="number" min="0" placeholder="EAN" value="{{ request.form['ean']}}" >
 
-    <input type="submit" value="Save">
+    <input class="save-button" type="submit" value="Save">
   </form>
   <hr>
   <form action="{{ url_for('product_index') }}" method="">
-    <input class="danger" type="submit" value="Cancel" onclick="return confirm('Are you sure?');">
+    <input class="remove_reg" type="submit" value="Cancel" onclick="return confirm('Are you sure?');">
   </form>
 {% endblock %}

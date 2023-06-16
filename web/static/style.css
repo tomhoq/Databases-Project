@@ -12,7 +12,7 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: "Inter";
-  color: #090F1C;   
+  color: #090F1C;   #cor do texto no corpo principal aqui
   margin: 1rem 0;
   font-weight: 700;
     line-height: 19px;
@@ -25,12 +25,12 @@ hr {
 }
 
 nav {
-  background: lightgray;
+  background: #C9291F;
   display: flex;
   align-items: center;
   padding: 1.5rem;
-  background: linear-gradient(180deg, #C9291F 0%, rgba(181, 60, 53, 0.85) 100%);
   box-shadow: 0px 6px 4px rgba(0, 0, 0, 0.34);
+  border-radius: 5px;
 }
 
 nav h1 {
@@ -164,6 +164,7 @@ label #who {
 
 
 .submit {
+  margin-bottom
   width: 139px;
   height: 27px;
   background: #DC5DD7;
@@ -174,9 +175,9 @@ label #who {
   border: none;
   cursor: pointer;
   transition: background-color 0.2s;
-  text-align: center;
+  text-align: center
   font-family: 'Inter';
-  font-style: normal;
+    font-style: normal;
     font-weight: 700;
     font-size: 14px;
     line-height: 17px;
@@ -293,6 +294,7 @@ input[type=submit] {
     position: relative;
 }
 
+
 .remove {
     background: linear-gradient(180deg, #C9291F 0%, rgba(181, 60, 53, 0.85) 100%);
     color: white;
@@ -345,3 +347,87 @@ input[type="checkbox"]:checked::before {
   content: "";
 }
 
+.products{
+    font-weight: 600;
+    font-size: 1.2em;
+    line-height: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left:45px;
+}
+
+.last_ord{
+    display:flex;
+    flex-direction:horizontal;
+    justify-content: space-between;
+}
+
+.date{
+}
+
+
+.pay_ord {
+    background: #2B2A4C;
+    border-radius: 10px;
+    color: white;
+    border: none;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    padding: auto;
+    width: 74px;
+    height: 59px;
+    line-height: 59px; 
+    transition: background 1.0s ease, transform 0.3s ease;    
+  }
+
+  .pay_ord:hover {
+    background: linear-gradient(180deg, #121128 0%, rgba(20, 19, 48, 0.68) 100%);
+    transform: scale(1.1);
+  }
+
+.save-button {
+    background-color: #2B2A4C;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .save-button:hover {
+    background-color: #0056b3;
+  }
+
+  .save-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #0056b3;
+  }
+
+
+.remove_reg {
+    background: linear-gradient(180deg, #C9291F 0%, rgba(181, 60, 53, 0.85) 100%);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    /* Add any other desired styles */
+  }
+
+  .remove_reg:hover {
+    background-color: #0056b3;
+  }
+
+  .remove_reg:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #0056b3;
+  }

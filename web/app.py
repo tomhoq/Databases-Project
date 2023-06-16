@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+import os
 from logging.config import dictConfig
 
 import psycopg
@@ -15,7 +16,7 @@ from datetime import datetime
 
 
 # postgres://{user}:{password}@{hostname}:{port}/{database-name}
-DATABASE_URL = "postgres://db:db@postgres/db"
+DATABASE_URL = os.environ.get("DATABASE_URL", "postgres://db:db@postgres/db")
 
 pool = ConnectionPool(conninfo=DATABASE_URL)
 # the pool starts connecting immediately.
@@ -67,7 +68,6 @@ def product_index():
         log.debug(f"\n\n\n\n {quantities}")
         log.debug(f"\n\n\n\n {skus}")
         log.debug(f"\n\n\n\n {cust_no}")
-
 
         error = None
         

@@ -13,10 +13,10 @@
         </div>
         <!-- <a class="action" href="">Edit</a> -->
       </header>
-      <p class="body">ordered by: {{ order['cust_no'] }}</p>
-      <p class="body">ordered on: {{ order['date'] }}</p>
-      <p class="body">ordered on: {{ order['sku'] }}</p>
-      <p class="body">ordered on: {{ order['qty'] }}</p>
+      <p class="body">Ordered by: {{ order['cust_no'] }}</p>
+      <p class="body">Ordered on: {{ order['date'] }}</p>
+      <p class="body">Product ordered: {{ order['sku'] }}</p>
+      <p class="body">Quantity: {{ order['qty'] }}</p>
     </article>
     {% if not loop.last %}
       <hr>

@@ -152,7 +152,6 @@ def make_order():
                     for i in range(len(quantities)):
                         qty = int(quantities[i])
                         sku = skus[i]
-                        log.debug(f"\n {qty}")
                         
                         if qty != 0:
                             cur.execute(
@@ -191,7 +190,7 @@ def order_index():
                     SELECT p.order_no FROM pay p
                     WHERE p.order_no = o.order_no
                 )
-                ORDER BY o.date DESC;
+                ORDER BY o.order_no DESC;
                 """,
                 {},
             ).fetchall()

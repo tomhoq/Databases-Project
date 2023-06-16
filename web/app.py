@@ -69,58 +69,6 @@ def product_index():
     return render_template("product/product_index.html", products=products)
 
 
-@app.route("/make_order", methods=("GET", "POST"))
-def make_order():
-    """Show all the products, ordered by name alphabetically."""
-
-    with pool.connection() as conn:
-        with conn.cursor(row_factory=namedtuple_row) as cur:
-            products = cur.execute(
-                """
-                SELECT sku, name, description, price, ean
-                FROM product
-                ORDER BY name ASC;
-                """,
-                {},
-            ).fetchall()
-            log.debug(f"Found {cur.rowcount} rows.")
-    
-    if request.method == "POST":
-        quantities = request.form.getlist("qty")
-        skus = request.form.getlist("sku")
-        cust_no = request.form.getlist("cust_no")
-        log.debug(f"\n\n\n\n {quantities}")
-        log.debug(f"\n\n\n\n {skus}")
-        log.debug(f"\n\n\n\n {cust_no}")
-
-
-        error = None
-
-        if not quantities:
-            error = "Quantities are required."
-
-        if error is not None:
-            flash(error)
-        else:
-            with pool.connection() as conn:
-                with conn.cursor(row_factory=namedtuple_row) as cur:
-                    cur.execute(
-                        """
-                        """
-                    )
-                conn.commit()
-            return redirect(url_for("product_index"))
-    
-    # API-like response is returned to clients that request JSON explicitly (e.g., fetch)
-    if (
-        request.accept_mimetypes["application/json"]
-        and not request.accept_mimetypes["text/html"]
-    ):
-        return jsonify(products)
-
-    return render_template("make_order/make_index.html", products=products)
-
-
 @app.route("/orders", methods=("GET",))
 def order_index():
     """Show all the unpaid orders, ordered from most recent date."""
@@ -140,7 +88,7 @@ def order_index():
                 {},
             ).fetchall()
             log.debug(f"Found {cur.rowcount} rows.")
-    
+
     # API-like response is returned to clients that request JSON explicitly (e.g., fetch)
     if (
         request.accept_mimetypes["application/json"]
@@ -230,79 +178,6 @@ def customer_register():
                 conn.commit()
             return redirect(url_for("customer_index"))
     return render_template("customer/customer_register.html", cust_no=cust_no)
-
-@app.route("/customers", methods=("POST",))
-def customer_delete(cust_no):
-    """Delete the customer."""
-    
-    with pool.connection() as conn:
-        with conn.cursor(row_factory=namedtuple_row) as cur:
-            cur.execute("""START TRANSACTION;""")
-
-            cur.execute(
-                """
-                DELETE FROM contains c
-                WHERE EXISTS (
-                    SELECT * FROM order o
-                    WHERE o.order_no = c.order_no
-                    AND cust_no = %(cust_no)s
-                );
-                """,
-                {"cust_no": cust_no},
-            )
-
-            cur.execute(
-                """
-                DELETE FROM process p
-                WHERE EXISTS (
-                    SELECT * FROM order o
-                    WHERE o.order_no = p.order_no
-                    AND cust_no = %(cust_no)s
-                );
-                """,
-                {"cust_no": cust_no},
-            )
-
-            cur.execute(
-                """
-                DELETE FROM pay p
-                WHERE EXISTS (
-                    SELECT * FROM order o
-                    WHERE o.order_no = p.order_no
-                    AND cust_no = %(cust_no)s
-                );
-                """,
-                {"cust_no": cust_no},
-            )
-
-            cur.execute(
-                """
-                DELETE FROM pay
-                WHERE cust_no = %(cust_no)s;
-                """,
-                {"cust_no": cust_no},
-            )
-
-            cur.execute(
-                """
-                DELETE FROM orders
-                WHERE cust_no = %(cust_no)s;
-                """,
-                {"cust_no": cust_no},
-            )
-
-            cur.execute(
-                """
-                DELETE FROM customer
-                WHERE cust_no = %(cust_no)s;
-                """,
-                {"cust_no": cust_no},
-            )
-
-            cur.execute(""" COMMIT;""")
-
-        conn.commit()
-    return redirect(url_for("customer_index"))
 
 
 @app.route("/customers", methods=("POST",))

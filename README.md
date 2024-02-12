@@ -1,4 +1,3 @@
-# projBD
-Projeto de Bases de Dados - 2022/2023
+# Databases Project -2022/2023
 
-Website com interface empresa/cliente com acesso a uma base de dados
+Developed a website with 2 different interfaces (client/workers) to simulate an online store. Connected to a relational database launched on docker, accessed with Flask.
